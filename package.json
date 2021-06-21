@@ -1,0 +1,29 @@
+{
+  "name": "desafio-node-loja",
+  "version": "1.0.0",
+  "description": "## História",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igormuba/desafio-node-loja.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/igormuba/desafio-node-loja/issues"
+  },
+  "homepage": "https://github.com/igormuba/desafio-node-loja#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.12.14"
+  }
+}
