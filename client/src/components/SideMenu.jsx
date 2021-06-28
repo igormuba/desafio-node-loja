@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -18,6 +18,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import { Link } from "react-router-dom";
+import Cookies from "universal-cookie";
+import axios from "axios";
 
 const drawerWidth = 240;
 
@@ -78,7 +80,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PersistentDrawerLeft(props) {
+function PersistentDrawerLeft(props) {
+  const cookies = new Cookies();
+
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -137,34 +141,12 @@ export default function PersistentDrawerLeft(props) {
 
         <List>
           {Object.entries(props.Menu).map(([key, value]) => {
-            console.log(key);
-            console.log(value);
-
             return (
               <ListItem component={Link} to={`/${key}`} button>
                 <ListItemText primary={value.name} />
               </ListItem>
             );
           })}
-          {/* {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))} */}
-        </List>
-
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-            </ListItem>
-          ))}
         </List>
       </Drawer>
       <main
@@ -178,3 +160,5 @@ export default function PersistentDrawerLeft(props) {
     </div>
   );
 }
+
+export default PersistentDrawerLeft;

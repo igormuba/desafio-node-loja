@@ -2,11 +2,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const productRouter = require("./routes/productRouter");
 const userRouter = require("./routes/userRouter");
+const cors = require("cors");
 
 require("dotenv").config();
 
 //express
+
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -24,13 +28,14 @@ mongoose.connect(uri, {
   useCreateIndex: true,
 });
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
+  console.log();
   res.send("Hello World");
 });
 
-app.use(productRouter);
-app.use(userRouter);
+app.use("/api", productRouter);
+app.use("/api", userRouter);
 
 app.listen(process.env.PORT || 3000, function () {
-  console.log("listening on 3000");
+  console.log(`listening on ${process.env.PORT}`);
 });

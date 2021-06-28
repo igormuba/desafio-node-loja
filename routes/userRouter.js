@@ -11,15 +11,19 @@ let jwtSecret = process.env.JWTSECRET;
 
 //user details
 app.get("/auth", auth, async (req, res) => {
+  console.log(req.user.id);
   try {
     let user = await UserSchema.findOne({ _id: req.user.id });
+    let isAdminFromEnvironment = user.email === process.env.ADMEMAIL;
     user = {
       name: user.name,
       email: user.email,
       username: user.username,
+      admin: isAdminFromEnvironment,
     };
+    res.status(200).send(user);
 
-    res.json(user);
+    res.status(200).json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Erro interno");
@@ -31,8 +35,6 @@ app.post(
   "/login",
   [
     check("email", "Inclua um e-mail válido").isEmail(),
-    check("password", "Senha deve ser preenchida").exists(),
-    check("username", "Username deve ser preenchido").exists(),
     check("password", "Senha deve ter ao menos 6 caracteres").isLength({
       min: 6,
     }),
@@ -55,6 +57,7 @@ app.post(
       if (!isMatch) {
         return res.status(400).json({ errors: [{ msg: "Senha inválida" }] });
       }
+      let isAdminFromEnvironment = email === process.env.ADMEMAIL;
 
       const payload = {
         id: user._id,
@@ -62,7 +65,9 @@ app.post(
 
       jwt.sign(payload, jwtSecret, { expiresIn: 3600000 }, (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.status(200).send({ token, admin: isAdminFromEnvironment });
+
+        res.status(200).json({ token, admin: isAdminFromEnvironment });
       });
     } catch (err) {
       console.error(err.message);
@@ -75,15 +80,18 @@ app.post(
   "/register",
   [
     check("name", "Nome deve ser preenchido").not().isEmpty(),
-    check("name", "Username deve ser preenchido").not().isEmpty(),
+    check("username", "Username deve ser preenchido").not().isEmpty(),
     check("email", "Email precisa ser válido").isEmail(),
     check("password", "Senha deve ter ao menos 6 caracteres").isLength({
       min: 6,
     }),
   ],
   async (req, res) => {
+    console.log("hit");
+    console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const { name, email, password, username } = req.body;
@@ -112,19 +120,32 @@ app.post(
       console.log(user.password);
 
       try {
-        await registeredUser.save();
+        let userSaved = await registeredUser.save();
+        console.log("userSaved");
+        console.log(userSaved);
+
         const payload = {
-          id: user._id,
+          id: userSaved._id,
         };
+        console.log("will sign");
+
         jwt.sign(payload, jwtSecret, { expiresIn: 3600000 }, (err, token) => {
           if (err) throw err;
-          res.json({ token });
+          console.log("sign");
+          console.log(payload);
+          console.log({ token, isAdminFromEnvironment });
+          res.status(200).send({ token, admin: isAdminFromEnvironment });
+          res.status(200).json({ token, admin: isAdminFromEnvironment });
         });
         // res.send(registeredUser);
       } catch (error) {
+        console.log(error);
+        console.error(error.message);
+
         res.status(500).send(error);
       }
     } catch (err) {
+      console.log(err);
       console.error(err.message);
       res.status(500).send("Server error");
     }

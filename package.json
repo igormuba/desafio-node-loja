@@ -4,6 +4,11 @@
   "description": "## História",
   "main": "index.js",
   "scripts": {
+    "client": "npm start --prefix client",
+    "admin": "npm start --prefix admin",
+    "automation": "npm start --prefix automation",
+    "dev": "concurrently \"nodemon index.js\" \"npm run client\"",
+    "start": "concurrently \"nodemon index.js\" ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,13 +22,14 @@
   },
   "homepage": "https://github.com/igormuba/desafio-node-loja#readme",
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "express-validator": "^6.12.0",
+    "express-validator": "^6.1.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.9",
     "mongoose": "^5.12.14"
-  }
+  },
+  "proxy": "http://127.0.0.1:8080/"
 }
