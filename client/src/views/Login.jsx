@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,23 +33,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SignIn() {
+function SignIn(props) {
   const cookies = new Cookies();
-
+  const history = useHistory();
   const classes = useStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function clickLogin(e) {
-    let answer = await axios.post("/api/login", {
-      email,
-      password,
-    });
-    let token = answer.data.token;
-    let admin = answer.data.admin;
-    cookies.set("token", token, { path: "/" });
-    cookies.set("admin", admin, { path: "/" });
+    try {
+      let answer = await axios.post("/api/login", {
+        email,
+        password,
+      });
+      let token = answer.data.token;
+      let admin = answer.data.admin;
+
+      if (answer.data && answer.data.token) {
+        cookies.set("token", token, { path: "/" });
+        cookies.set("admin", admin, { path: "/" });
+        history.push("/productList");
+        window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -100,7 +110,7 @@ function SignIn() {
             className={classes.submit}
             onClick={clickLogin}
           >
-            Sign In
+            Entrar
           </Button>
           <Grid container>
             <Grid item>

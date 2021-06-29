@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,24 +35,32 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUp(props) {
   const cookies = new Cookies();
-
+  const history = useHistory();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   async function clickRegister(e) {
-    let answer = await axios.post("/api/register", {
-      name,
-      email,
-      username,
-      password,
-    });
-    let token = answer.data.token;
-    let admin = answer.data.admin;
-    console.log(answer.data);
-    cookies.set("token", token, { path: "/" });
-    cookies.set("admin", admin, { path: "/" });
+    try {
+      let answer = await axios.post("/api/register", {
+        name,
+        email,
+        username,
+        password,
+      });
+      let token = answer.data.token;
+      let admin = answer.data.admin;
+      console.log(answer.data);
+      if (answer.data && answer.data.token) {
+        cookies.set("token", token, { path: "/" });
+        cookies.set("admin", admin, { path: "/" });
+        history.push("/productList");
+        window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const classes = useStyles();
@@ -131,7 +140,7 @@ function SignUp(props) {
             className={classes.submit}
             onClick={clickRegister}
           >
-            Sign In
+            Registrar
           </Button>
           <Grid container>
             <Grid item>
