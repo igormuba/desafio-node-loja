@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { withCookies, useCookies } from "react-cookie";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
@@ -6,13 +6,17 @@ import Button from "@material-ui/core/Button";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { useHistory } from "react-router";
+import { useParams } from "react-router-dom";
 
 import "./ProductList.css";
 
-const AddProduct = (props) => {
+const EditProduct = (props) => {
   const history = useHistory();
+  const params = useParams();
 
+  // yuo can find all params from here
   const cookies = new Cookies();
+  let [product, setProduct] = useState({});
 
   let [name, setName] = useState("");
   let [description, setDescription] = useState("");
@@ -21,11 +25,33 @@ const AddProduct = (props) => {
   let [stock, setStock] = useState(0);
   let [price, setPrice] = useState(0);
 
-  async function addItem() {
+  const fetchMyAPI = useCallback(async () => {
+    console.log(params);
+    let productData = await axios.get(`/api/products/${params.productId}`);
+    if (productData.data) {
+      setProduct(productData.data);
+    }
+  }, []);
+  useEffect(() => {
+    fetchMyAPI();
+  }, [fetchMyAPI]);
+  useEffect(() => {
+    console.log("product");
+    console.log(product);
+
+    setName(product.name || "");
+    setDescription(product.description || "");
+    setImage(product.image || "");
+    setCategory(product.category || "");
+    setStock(product.stock || 0);
+    setPrice(product.price || 0);
+  }, [product]);
+
+  async function editItem() {
     let token = cookies.get("token") || "";
     try {
-      let answer = await axios.post(
-        "/api/products",
+      let answer = await axios.patch(
+        `/api/products/${params.productId}`,
         {
           name,
           description,
@@ -40,24 +66,23 @@ const AddProduct = (props) => {
           },
         }
       );
-      history.push("/productList");
-      window.location.reload();
     } catch (err) {
       /*TODO: por algum motivo dá erro 401 não autorizado mas se o token estiver correto ele salva
       toda autorização é conferida no backend, essa rota aparece se o cookie admin for true
       mas se o token não bater no backend não salva, o cookie no front end é por agilidade
       */
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+      sleep(100).then(() => {
+        history.push("/productList");
+        sleep(100).then(() => {
+          window.location.reload();
+        });
+      });
       console.log(err);
     }
-    function sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-    sleep(100).then(() => {
-      history.push("/productList");
-      sleep(100).then(() => {
-        window.location.reload();
-      });
-    });
   }
 
   return (
@@ -129,8 +154,8 @@ const AddProduct = (props) => {
         value={price}
         onChange={(e) => setPrice(e.target.value)}
       />
-      <Button fullWidth variant="contained" color="primary" onClick={addItem}>
-        Adicionar
+      <Button fullWidth variant="contained" color="primary" onClick={editItem}>
+        Editar
       </Button>
       <div className="card card-1">
         <div className="title">
@@ -156,4 +181,4 @@ const AddProduct = (props) => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

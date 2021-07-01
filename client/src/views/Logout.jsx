@@ -9,9 +9,15 @@ const Logout = () => {
   useEffect(() => {
     cookies.remove("admin");
     cookies.remove("token");
-
-    history.push("/productList");
-    window.location.reload();
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+    sleep(100).then(() => {
+      history.push("/productList");
+      sleep(100).then(() => {
+        window.location.reload();
+      });
+    });
   }, []);
   return <div></div>;
 };

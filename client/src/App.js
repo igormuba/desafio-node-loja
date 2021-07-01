@@ -4,6 +4,8 @@ import Register from "./views/Register";
 import Logout from "./views/Logout";
 import ProductList from "./views/ProductList";
 import AddProduct from "./views/AddProduct";
+import EditProduct from "./views/EditProduct";
+
 import React, { useState, useCallback, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -24,6 +26,8 @@ function App() {
     let authorized = false;
     let admin = false;
     if (token) {
+      setroutes({ ...routes, logout: { name: "Sair", Component: <Logout /> } });
+
       let user = await axios.get("/api/auth", {
         headers: {
           "x-auth-token": token,
@@ -32,20 +36,30 @@ function App() {
       if (user.data) {
         user = user.data;
         admin = user.admin;
+        setroutes({
+          ...routes,
+          logout: { name: "Sair", Component: <Logout /> },
+        });
         if (admin) {
-          routes["addProduct"] = {
-            name: "Adicionar",
-            Component: <AddProduct />,
-          };
+          setroutes({
+            ...routes,
+            addProduct: { name: "Adicionar", Component: <AddProduct /> },
+            logout: { name: "Sair", Component: <Logout /> },
+          });
         }
         setUser(user);
         authorized = true;
-        routes["logout"] = { name: "Sair", Component: <Logout /> };
       }
     }
     if (!authorized) {
-      routes["register"] = { name: "Registrar", Component: <Register /> };
-      routes["login"] = { name: "Acessar", Component: <Login /> };
+      setroutes({
+        ...routes,
+        register: { name: "Registrar", Component: <Register /> },
+        login: { name: "Acessar", Component: <Login /> },
+      });
+
+      // routes["register"] = { name: "Registrar", Component: <Register /> };
+      // routes["login"] = { name: "Acessar", Component: <Login /> };
     }
   }, []);
 
@@ -75,11 +89,15 @@ function App() {
             <Route exact={true} path={`/addProduct`}>
               <AddProduct />
             </Route>
+
             <Route exact={true} path={`/logout`}>
               <Logout />
             </Route>
             <Route exact={true} path={`/productList`}>
               <ProductList />
+            </Route>
+            <Route exact={true} path={`/productList/:productId`}>
+              <EditProduct />
             </Route>
             <Route exact={true} path={`/register`}>
               <Register />

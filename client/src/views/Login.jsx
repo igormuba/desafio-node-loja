@@ -53,8 +53,15 @@ function SignIn(props) {
       if (answer.data && answer.data.token) {
         cookies.set("token", token, { path: "/" });
         cookies.set("admin", admin, { path: "/" });
-        history.push("/productList");
-        window.location.reload();
+        function sleep(ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+        sleep(100).then(() => {
+          history.push("/productList");
+          sleep(100).then(() => {
+            window.location.reload();
+          });
+        });
       }
     } catch (err) {
       console.log(err);

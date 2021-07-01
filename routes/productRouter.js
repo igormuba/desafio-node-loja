@@ -22,6 +22,16 @@ app.get("/products", async (request, response) => {
   }
 });
 
+app.get("/products/:id", async (request, response) => {
+  const product = await ProductSchema.findById(request.params.id);
+
+  try {
+    response.send(product);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
 app.post("/products", auth, async (request, response) => {
   console.log(request.user);
   await onlyCRUDAuthorized(request.user.id, response);
