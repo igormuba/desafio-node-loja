@@ -1,3 +1,8 @@
+# Versão live para teste
+
+Uma versão está disponível e funcionando, hospedada no Heroku em:
+https://desafio-loja.herokuapp.com
+
 # Resultado, como usar a API
 
 O projeto foi feito para rodar no heroku, por isso no `package.json` possui o `heroku-postbuild` para compilar o front-end em React que complementa o back-end em Express

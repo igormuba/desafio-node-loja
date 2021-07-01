@@ -8,7 +8,7 @@
     "admin": "npm start --prefix admin",
     "automation": "npm start --prefix automation",
     "dev": "concurrently \"nodemon index.js\" \"npm run client\"",
-    "start": "concurrently \"nodemon index.js\" ",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "cd client && npm i && npm run build"
   },
