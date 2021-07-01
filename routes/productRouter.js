@@ -22,16 +22,6 @@ app.get("/products", async (request, response) => {
   }
 });
 
-app.get("/products/:id", async (request, response) => {
-  const product = await ProductSchema.findById(request.params.id);
-
-  try {
-    response.send(product);
-  } catch (error) {
-    response.status(500).send(error);
-  }
-});
-
 app.post("/products", auth, async (request, response) => {
   console.log(request.user);
   await onlyCRUDAuthorized(request.user.id, response);
@@ -46,6 +36,16 @@ app.post("/products", auth, async (request, response) => {
   }
 });
 
+app.get("/products/:id", async (request, response) => {
+  const product = await ProductSchema.findById(request.params.id);
+
+  try {
+    response.send(product);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
 app.patch("/products/:id", auth, async (request, response) => {
   await onlyCRUDAuthorized(request.user.id, response);
 
@@ -53,6 +53,18 @@ app.patch("/products/:id", auth, async (request, response) => {
     await ProductSchema.findByIdAndUpdate(request.params.id, request.body);
     await ProductSchema.save();
     response.send(product);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.delete("/products/:id", auth, async (request, response) => {
+  await onlyCRUDAuthorized(request.user.id, response);
+
+  try {
+    await ProductSchema.findByIdAndDelete(request.params.id, request.body);
+    await ProductSchema.save();
+    response.send("ok");
   } catch (error) {
     response.status(500).send(error);
   }

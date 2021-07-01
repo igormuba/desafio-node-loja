@@ -47,25 +47,45 @@ const EditProduct = (props) => {
     setPrice(product.price || 0);
   }, [product]);
 
-  async function editItem() {
+  async function editItem(editOrDelete) {
     let token = cookies.get("token") || "";
     try {
-      let answer = await axios.patch(
-        `/api/products/${params.productId}`,
-        {
-          name,
-          description,
-          image,
-          category,
-          stock,
-          price,
-        },
-        {
-          headers: {
-            "x-auth-token": token,
+      if (editOrDelete === "edit") {
+        let answer = await axios.patch(
+          `/api/products/${params.productId}`,
+          {
+            name,
+            description,
+            image,
+            category,
+            stock,
+            price,
           },
-        }
-      );
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
+      }
+      if (editOrDelete === "delete") {
+        let answer = await axios.delete(
+          `/api/products/${params.productId}`,
+          {
+            name,
+            description,
+            image,
+            category,
+            stock,
+            price,
+          },
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
+      }
     } catch (err) {
       /*TODO: por algum motivo dá erro 401 não autorizado mas se o token estiver correto ele salva
       toda autorização é conferida no backend, essa rota aparece se o cookie admin for true
@@ -154,8 +174,21 @@ const EditProduct = (props) => {
         value={price}
         onChange={(e) => setPrice(e.target.value)}
       />
-      <Button fullWidth variant="contained" color="primary" onClick={editItem}>
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={() => editItem("edit")}
+      >
         Editar
+      </Button>
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={() => editItem("delete")}
+      >
+        Deletar
       </Button>
       <div className="card card-1">
         <div className="title">
