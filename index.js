@@ -29,7 +29,7 @@ mongoose.connect(uri, {
 });
 
 //serve compiled react
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "client/build")));
 
 app.get("/api", (req, res) => {
   console.log();
@@ -38,6 +38,9 @@ app.get("/api", (req, res) => {
 
 app.use("/api", productRouter);
 app.use("/api", userRouter);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
 
 app.listen(process.env.PORT || 3000, function () {
   console.log(`listening on ${process.env.PORT}`);
