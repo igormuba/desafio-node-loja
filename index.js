@@ -28,6 +28,9 @@ mongoose.connect(uri, {
   useCreateIndex: true,
 });
 
+//serve compiled react
+app.use(express.static("public"));
+
 app.get("/api", (req, res) => {
   console.log();
   res.send("Hello World");
